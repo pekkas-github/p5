@@ -44,7 +44,7 @@ class Stones {
   stonesStopped() {
     let status = true
     this.stonesInPlay.forEach( stone => {
-      if (stone.vx > 0 || stone.vy > 0) {
+      if (stone.state === 'moving') {
         status = false  // at least one stone is moving
       }
     })

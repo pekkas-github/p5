@@ -7,6 +7,7 @@ class Stone {
     this.vx    = 0
     this.vy    = 0
     this.color = color
+    this.state = 'stopped'
   }
   
   
@@ -21,6 +22,16 @@ class Stone {
     
     this.x      = this.x + this.vx
     this.y      = this.y + this.vy
+
+    this.setState()
+  }
+
+  setState() {
+    if (this.vx === 0 && this.vy === 0) {
+      this.state = 'stopped'
+    } else {
+      this.state = 'moving'
+    }
   }
     
   getNTComponents(bounceAngle) {
