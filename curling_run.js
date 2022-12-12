@@ -1,5 +1,6 @@
 const k           = 2
 const friction    = 0.005
+const curlSpeed   = 0.0005
     // board
 const cw          = 1500
 const ch          = k*160
@@ -8,17 +9,19 @@ const backline    = cw - k*60
 const teeline     = cw - k*120
 const hogline     = cw - k*330
 
-let game        = new Game()
+let game          = new Game()
 
 const txtEnds   = document.querySelector('#ends')
 const txtStones = document.querySelector('#stones')
 const txtYellow = document.querySelector('#yellow')
 const txtRed    = document.querySelector('#red')
+const txtCurl   = document.querySelector('#curl')
 
 const btnNewEnd = document.querySelector('#btn-new-end')
 btnNewEnd.onclick = () => {
   if (game.state === 'idle') {game.newEnd()}
   if (game.state === 'finished') {game = new Game()}
+  txtCurl.innerText = 0
 }
 
 function setup() {
@@ -33,6 +36,7 @@ function draw() {
   drawStones()
   drawScoreBoard()
   game.run()
+  if (game.currentEnd.state === 'stopped') txtCurl.innerText = 0
 }
 
 function drawBoardCircles() {
@@ -99,4 +103,8 @@ function keyPressed() {
   if (keyCode === 32) {
     game.currentEnd.shoot(mouseX, mouseY)
   }
+  if (keyCode === UP_ARROW) {game.currentEnd.incrCurl()}
+  if (keyCode === DOWN_ARROW) {game.currentEnd.decrCurl()}
+  
+  txtCurl.innerText = game.currentEnd.curlFactor
 }
