@@ -6,6 +6,7 @@ class End {
     this.executedShots = 0
     this.stones        = new Stones(color)
     this.state         = 'idle'
+    this.curlFactor    = 0
     
     
     // API
@@ -40,7 +41,8 @@ class End {
   setNewStone() {
     const color = (this.stones.currentStone.color === 'y') ? 'r' : 'y'
     this.stones.add(color)
-    this.state = 'idle'
+    this.curlFactor  = 0
+    this.state       = 'idle'
   }
   
   getResult() {
@@ -64,8 +66,16 @@ class End {
   }
     
   shootStone(x, y) {
-    this.stones.shoot(x, y)
+    this.stones.shoot(x, y, this.curlFactor)
     this.state = 'running'
   }
-      
+  
+  incrCurl() {
+    if (this.curlFactor < 3) {this.curlFactor++} 
+  }
+
+  decrCurl() {
+    if (this.curlFactor > -3) {this.curlFactor--} 
+  }
+
 }

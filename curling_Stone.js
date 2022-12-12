@@ -6,32 +6,30 @@ class Stone {
     this.y     = ch/2
     this.vx    = 0
     this.vy    = 0
+    this.vc    = 0
     this.color = color
-    this.state = 'stopped'
   }
   
   
   move() {
+    // Stone's xy-speed components to ra-components
     const coord = new Coordinates()
-    const vra     = coord.toRA(this.vx, this.vy)
-    vra.mag       = (vra.mag - friction <= 0) ? 0 : vra.mag - friction
+    const vra   = coord.toRA(this.vx, this.vy)
+
+    // Apply curl speed after hogline and if stone is moving
+    const curlAngle = (vra.mag > 0 && this.x > hogline) ? Math.atan(this.vc/vra.mag) : 0
+    vra.ang     = vra.ang + curlAngle
+    // Apply friction to speed magnitude
+    vra.mag     = (vra.mag - friction <= 0) ? 0 : vra.mag - friction
+
+    // Change ra-format back to sy-format
     const vxy   = coord.toXY(vra.mag, vra.ang)
-    
     this.vx     = vxy.x
     this.vy     = vxy.y
     
+    // Move the stone with vx*dt and vy*dt
     this.x      = this.x + this.vx
     this.y      = this.y + this.vy
-
-    this.setState()
-  }
-
-  setState() {
-    if (this.vx === 0 && this.vy === 0) {
-      this.state = 'stopped'
-    } else {
-      this.state = 'moving'
-    }
   }
     
   getNTComponents(bounceAngle) {

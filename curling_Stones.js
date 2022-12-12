@@ -13,8 +13,8 @@ class Stones {
     this.add = (color) => {
       if (this.state === 'stopped') { this.addStone(color) }
     }
-    this.shoot = (x,y) => {
-      if (this.state === 'ready') { this.shootStone(x, y)}
+    this.shoot = (x,y, curlFactor) => {
+      if (this.state === 'ready') { this.shootStone(x, y, curlFactor)}
     }
   }
   
@@ -25,11 +25,12 @@ class Stones {
   }
 
   
-  shootStone(x, y) {
+  shootStone(x, y, curlFactor) {
     const vx = (x / cw) * 5
     const vy = (ch/2 - y)/x * vx
     this.currentStone.vx = vx
     this.currentStone.vy = vy
+    this.currentStone.vc = curlFactor * curlSpeed
     this.state = 'running' 
   }
   
@@ -44,7 +45,7 @@ class Stones {
   stonesStopped() {
     let status = true
     this.stonesInPlay.forEach( stone => {
-      if (stone.state === 'moving') {
+      if (stone.vx > 0 || stone.vy > 0) {
         status = false  // at least one stone is moving
       }
     })
