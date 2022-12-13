@@ -22,7 +22,7 @@ class Stone {
     // Apply friction to speed magnitude
     vra.mag     = (vra.mag - friction <= 0) ? 0 : vra.mag - friction
 
-    // Change ra-format back to sy-format
+    // Change ra-format back to xy-format
     const vxy   = coord.toXY(vra.mag, vra.ang)
     this.vx     = vxy.x
     this.vy     = vxy.y
