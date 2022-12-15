@@ -66,16 +66,19 @@ class End {
   }
     
   shootStone(x, y) {
+    if (this.curlFactor === 0) return
     this.stones.shoot(x, y, this.curlFactor)
     this.state = 'running'
   }
   
   incrCurl() {
-    if (this.curlFactor < 3) {this.curlFactor++} 
+    if (this.curlFactor < 3) {this.curlFactor++}
+    if (this.curlFactor === 0) this.curlFactor = 1
   }
 
   decrCurl() {
     if (this.curlFactor > -3) {this.curlFactor--} 
+    if (this.curlFactor === 0) this.curlFactor = -1
   }
 
 }
