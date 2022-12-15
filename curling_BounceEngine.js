@@ -1,38 +1,31 @@
 class BounceEngine {
   
   moveStones(stones) {
-    const coord = new Coordinates()
-    const n     = stones.length   // number of stones
+    const vectors = new Vectors()
+    const n       = stones.length   // number of stones
     
     // Compare pair by pair
     for (let i = 0; i < n-1; i++) {
-      const b1 = stones[i]
+      const s1 = stones[i]
       
       for (let j = i+1; j < n; j++) {
-        const b2 = stones[j]
-        // Distance vector between ball centers after next move
-        const distance = coord.toRA((b2.x+b2.vx)-(b1.x+b1.vx), (b2.y+b2.vy)-(b1.y+b1.vy)) 
-        // There is a bounce if the distance is less than the sum of radii
-        if (distance.mag <= (b1.r + b2.r)) {
-          // Define radial and tangential speed components as polar coordinates
-          const b1vNT = b1.getNTComponents(distance.ang)
-          const b2vNT = b2.getNTComponents(distance.ang)
+        const s2 = stones[j]
+        // Distance vector between ball centers
+        const distanceVector = vectors.getInPolarMode( {x: (s2.x - s1.x), y: (s2.y - s1.y)} ) 
+        // There is a bounce if the distance is less than sum of the radii
+        if (distanceVector.mag <= (s1.r + s2.r)) {
+          // Get radial and tangential speed components of stone's speed
+          const s1Comps = vectors.getRadAndTanComponents(s1.v, distanceVector.ang) 
+          const s2Comps = vectors.getRadAndTanComponents(s2.v, distanceVector.ang) 
                                      
-          // Calculate new radial speeds for stones
-          const b1vnmag = b2vNT.vn.mag
-          const b2vnmag = b1vNT.vn.mag
+          // Exchange radial speeds between stones
+          const s1vRad = s1Comps.vRad.mag
+          s1Comps.vRad.mag = s2Comps.vRad.mag
+          s2Comps.vRad.mag = s1vRad
           
-          // Change radial and normal speeds in rectangular coordinates
-          const b1vnxy = coord.toXY(b1vnmag, b1vNT.vn.ang)
-          const b1vtxy = coord.toXY(b1vNT.vt.mag, b1vNT.vt.ang)
-          const b2vnxy = coord.toXY(b2vnmag, b2vNT.vn.ang)
-          const b2vtxy = coord.toXY(b2vNT.vt.mag, b2vNT.vt.ang)
-
-          // Update stones' sppeds (xy components)
-          b1.vx = b1vnxy.x + b1vtxy.x
-          b1.vy = b1vnxy.y + b1vtxy.y
-          b2.vx = b2vnxy.x + b2vtxy.x
-          b2.vy = b2vnxy.y + b2vtxy.y
+          // New stone speed is sum of radial and tangential components
+          s1.v = vectors.addVectors(s1Comps.vRad, s1Comps.vTan)
+          s2.v = vectors.addVectors(s2Comps.vRad, s2Comps.vTan)
         }
       }
     }
