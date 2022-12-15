@@ -13,7 +13,8 @@ class BounceEngine {
         // Distance vector between ball centers
         const distanceVector = vectors.getInPolarMode( {x: (s2.x - s1.x), y: (s2.y - s1.y)} ) 
         // There is a bounce if the distance is less than sum of the radii
-        if (distanceVector.mag <= (s1.r + s2.r)) {
+        // Additional 1 ensures that the stones don't "stick" together
+        if (distanceVector.mag <= (s1.r + s2.r + 1)) {
           // Get radial and tangential speed components of stone's speed
           const s1Comps = vectors.getRadAndTanComponents(s1.v, distanceVector.ang) 
           const s2Comps = vectors.getRadAndTanComponents(s2.v, distanceVector.ang) 
