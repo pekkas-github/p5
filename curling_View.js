@@ -7,11 +7,11 @@ class View {
     this.txtRed    = document.querySelector('#red')
     this.txtCurl   = document.querySelector('#curl')
     this.btnNewEnd = document.querySelector('#btn-new-end')
-    
+    const self = this
     this.btnNewEnd.onclick = function() {
       if (game.state === 'idle') {game.newEnd()}
       if (game.state === 'finished') {game = new Game()}
-      this.txtCurl.innerText = 0
+      self.txtCurl.innerText = 0
     }
   }
   

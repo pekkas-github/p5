@@ -26,11 +26,9 @@ class Stones {
 
   
   shootStone(x, y, curlFactor) {
-    const vx = (x / cw) * 5
-    const vy = (ch/2 - y)/x * vx
-    this.currentStone.vx = vx
-    this.currentStone.vy = vy
-    this.currentStone.vc = curlFactor * curlSpeed
+    this.currentStone.v.mag = 5 * Math.sqrt(x**2 + y**2) / cw
+    this.currentStone.v.ang = Math.atan((ch/2 - y) / x)
+    this.currentStone.vCurl  = curlFactor * curlSpeed
     this.state = 'running' 
   }
   
@@ -45,8 +43,9 @@ class Stones {
   stonesStopped() {
     let status = true
     this.stonesInPlay.forEach( stone => {
-      if (stone.vx > 0 || stone.vy > 0) {
-        status = false  // at least one stone is moving
+//      if (stone.vx > 0 || stone.vy > 0) {
+      if (stone.v.mag > 0) {
+      status = false  // at least one stone is moving
       }
     })
     return status
@@ -60,6 +59,10 @@ class Stones {
     })
   }
   
+  /**
+  * Return the stones that are inside the home circles.
+  * Add a dist property for each stone.
+  */
   getValidStones() {
     const hx          = teeline
     const hy          = ch/2

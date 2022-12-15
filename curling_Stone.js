@@ -4,43 +4,26 @@ class Stone {
     this.r     = k*5
     this.x     = this.r
     this.y     = ch/2
-    this.vx    = 0
-    this.vy    = 0
-    this.vc    = 0
+    this.v     = {mag: 0, ang: 0}
+    this.vCurl = 0
     this.color = color
   }
   
   
   move() {
-    // Stone's xy-speed components to ra-components
-    const coord = new Coordinates()
-    const vra   = coord.toRA(this.vx, this.vy)
-
+    const vectors = new Vectors()
+    
     // Apply curl speed after hogline and if stone is moving
-    const curlAngle = (vra.mag > 0 && this.x > hogline) ? Math.atan(this.vc/vra.mag) : 0
-    vra.ang     = vra.ang + curlAngle
+    const curlAng = (this.v.mag > 0 && this.x > hogline) ? Math.atan(this.vCurl/this.v.mag) : 0
+    this.v.ang  += curlAng
     // Apply friction to speed magnitude
-    vra.mag     = (vra.mag - friction <= 0) ? 0 : vra.mag - friction
-
-    // Change ra-format back to xy-format
-    const vxy   = coord.toXY(vra.mag, vra.ang)
-    this.vx     = vxy.x
-    this.vy     = vxy.y
+    this.v.mag = (this.v.mag - friction <= 0) ? 0 : this.v.mag - friction
+    // Change from polar to rect
+    const vRect = vectors.getInRectMode(this.v)
     
     // Move the stone with vx*dt and vy*dt
-    this.x      = this.x + this.vx
-    this.y      = this.y + this.vy
-  }
-    
-  getNTComponents(bounceAngle) {
-    const coord   = new Coordinates()
-    const vStone  = coord.toRA(this.vx, this.vy)
-    const delta   = (vStone.ang - bounceAngle)
-    const vRad    = vStone.mag * Math.cos(delta)
-    const vTan    = sqrt(vStone.mag**2 - vRad**2)
-    const aTan    = (delta >= 0 && delta <= Math.PI || delta <= -Math.PI) ? bounceAngle + Math.PI/2 : bounceAngle - Math.PI/2
-    
-    return {vn:{mag: vRad, ang: bounceAngle}, vt:{mag: vTan, ang: aTan}}
+    this.x      += vRect.x 
+    this.y      += vRect.y
   }
 
 }
