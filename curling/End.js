@@ -2,7 +2,7 @@ class End {
 
   constructor(winnerColor) {
     
-    this.shotsPerEnd   = 4
+    this.shotsPerEnd   = 16
     this.executedShots = 0
     
     this.bouncer       = new BounceEngine()
