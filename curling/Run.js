@@ -1,4 +1,4 @@
-const k           = 2
+const k           = 1
 const friction    = 0.005
 const curlSpeed   = 0.0005
 const board       = new Board()
