@@ -1,107 +1,123 @@
-class View {
-
-  constructor() {
+const View = (function() {
     
-    this.txtEnds   = document.querySelector('#ends')
-    this.txtStones = document.querySelector('#stones')
-    this.txtYellow = document.querySelector('#yellow')
-    this.txtRed    = document.querySelector('#red')
-    this.txtCurl   = document.querySelector('#curl')
-    this.btnNewEnd = document.querySelector('#btn-new-end')
+  const txtEnds   = document.querySelector('#ends')
+  const txtStones = document.querySelector('#stones')
+  const txtYellow = document.querySelector('#yellow')
+  const txtRed    = document.querySelector('#red')
+  const txtCurl   = document.querySelector('#curl')
+  const btnNewEnd = document.querySelector('#btn-new-end')
+
+  
+  function render() {
+  
+    drawBoardCircles()
+    drawBoardLines()
+    drawStones()
+    updateScoreBoard()
   }
   
-  render() {
-  
-    this.drawBoardCircles()
-    this.drawBoardLines()
-    this.drawStones()
-    this.updateScoreBoard()
-    this.setEventListeners()  
-  }
-  
-  drawBoardCircles() {
+  function drawBoardCircles() {
 
     fill(255,0,0) // red
     noStroke()
-    circle(board.teeline, board.height/2, k*120)
+    circle(Sheet.teeline, Sheet.centerline, k*120)
     fill(255) // white
-    circle(board.teeline, board.height/2, k*80)
+    circle(Sheet.teeline, Sheet.centerline, k*80)
     fill(0,0,255) // blue
-    circle(board.teeline, board.height/2, k*40)
+    circle(Sheet.teeline, Sheet.centerline, k*40)
     fill(255) // white
-    circle(board.teeline, board.height/2, k*20)
+    circle(Sheet.teeline, Sheet.centerline, k*20)
   
   }
 
-  drawBoardLines() {
+  function drawBoardLines() {
     
     stroke(0)
-    line(0, board.centerline, board.width, board.centerline)
-    line(board.hogline, 0, board.hogline, board.height)
-    line(board.teeline, 0, board.teeline, board.height)
-    line(board.backline, 0, board.backline, board.height)
+    line(0, Sheet.centerline, Sheet.width, Sheet.centerline)
+    line(Sheet.hogline, Sheet.leftedge, Sheet.hogline, Sheet.rightedge)
+    line(Sheet.teeline, Sheet.leftedge, Sheet.teeline, Sheet.rightedge)
+    line(Sheet.backline, Sheet.leftedge, Sheet.backline, Sheet.rightedge)
   
   }
 
-  drawStones() {  
+  function drawStones() {  
   
     stroke(0)
-    game.currentEnd.stonesInPlay.forEach( stone => {
+    Sheet.stonesInPlay.forEach( stone => {
       if (stone.color === 'y') {
         fill(255, 255, 0) 
       } else {
         fill(255, 0, 0) 
       }
-      circle(stone.x, board.height - stone.y, 2*stone.r)
+      circle(stone.position.x, stone.position.y, 2 * stone.radius)
     })
   }
 
   
-  updateScoreBoard() {
+  function updateScoreBoard() {
     
+    // Create ends line -2---
     let ends            = ''
-    let playedEnds      = game.playedEnds.length
-    for (let i = 1; i <= game.endsPerGame; i++) {
-      ends += (playedEnds === i) ? i + ' '  : '- '
+    for (let i = 0; i < Game.endsPerGame - Game.currentEnd; i++) {
+      ends += '- '
     }
+    ends += 'O'
   
-    let stones          = ''
-    let playedStones    = Math.floor((game.currentEnd.executedShots + 2) / 2)
-    for (let i = 1; i <= game.currentEnd.shotsPerEnd / 2; i++) {
-      stones += (playedStones === i) ? i + ' ' : '- '
+    // Create stones line --3---
+    let stones = ''
+    for (let i = 1; i < Math.round((Sheet.stoneStorage.length+1)/2); i++) {
+      stones += '- '
     }
-
-    this.txtEnds.innerText = ends
-    this.txtStones.innerText = stones
-    this.txtYellow.innerText = game.score.y
-    this.txtRed.innerText = game.score.r
+    stones += (Sheet.stoneStorage.length % 2 === 0) ? 'X' : 'O'
   
-    if (fsm.state === 'running') {
-        this.btnNewEnd.innerText = 'New End'
-        this.btnNewEnd.disabled = true}
-    if (fsm.state === 'idle') {this.btnNewEnd.disabled = false}
-    if (fsm.state === 'end') {
-        this.btnNewEnd.disabled = false
-        this.btnNewEnd.innerText = 'New Game'}
+    txtEnds.innerText = ends
+    txtStones.innerText = stones
+    txtYellow.innerText = Game.totalScore.y
+    txtRed.innerText = Game.totalScore.r
+  
     
-    this.txtCurl.innerText = game.currentEnd.currentStone.curl
+    if (FSM.state === 'idle') {
+      btnNewEnd.innerText = 'New End'
+      btnNewEnd.disabled = false
+      btnNewEnd.onclick = () => FSM.execute('new_end')
+      return
+    }
+    
+    if (FSM.state === 'end') {
+      btnNewEnd.innerText = 'New Game'
+      btnNewEnd.disabled = false
+      btnNewEnd.onclick = () => FSM.execute('new_game')
+      return
+    }
   
+    btnNewEnd.innerText = 'Game on'
+    btnNewEnd.disabled = true
+    txtCurl.innerText = Sheet.currentStone.curlFactor
   }  
   
-  setEventListeners() {
-
-    this.btnNewEnd.onclick = () => fsm.execute('new_end')
+  
+  return {
+    render: render
   }
 
-}
+}())
 
 // Global event listeners
 
 
 function keyPressed() {
   
-  if (keyCode === 32)         fsm.execute('shoot', mouseX, mouseY)
-  if (keyCode === UP_ARROW)   fsm.execute('inc_curl') 
-  if (keyCode === DOWN_ARROW) fsm.execute('dec_curl') 
+  if (keyCode === UP_ARROW)   FSM.execute('inc_curl') 
+  if (keyCode === DOWN_ARROW) FSM.execute('dec_curl') 
+  if (keyCode === 32) {
+    const speedMag     = mouseX / Sheet.width
+    // Translate doesn't affect mouseY values
+    const initialSpeed = new p5.Vector(mouseX, mouseY + Sheet.leftedge)
+    
+    initialSpeed.normalize()
+    initialSpeed.mult(5 * speedMag)
+    
+    FSM.execute('shoot', initialSpeed)
+  }
   
 }
