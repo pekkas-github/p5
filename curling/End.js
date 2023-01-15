@@ -3,7 +3,7 @@ class End {
   static stonePairsPerEnd
   
   static initialize(lastWinner) {
-    End.stonePairsPerEnd = 2
+    End.stonePairsPerEnd = 8
     Sheet.stoneStorage     = []
     Sheet.stonesInPlay     = []
 

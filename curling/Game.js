@@ -1,6 +1,6 @@
 class Game {
 
-  static endsPerGame = 5
+  static endsPerGame = 10
   static currentEnd
   static lastWinner
   static totalScore = {y: 0, r: 0}
@@ -20,5 +20,6 @@ class Game {
     Game.totalScore.y += result.y
     Game.totalScore.r += result.r
     Game.currentEnd++    
+    Sheet.currentStone.curlFactor = 0
   }
 }

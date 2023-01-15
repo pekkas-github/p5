@@ -5,6 +5,7 @@ const View = (function() {
   const txtYellow = document.querySelector('#yellow')
   const txtRed    = document.querySelector('#red')
   const txtCurl   = document.querySelector('#curl')
+  const txtDir    = document.querySelector('#direction')
   const btnNewEnd = document.querySelector('#btn-new-end')
 
   
@@ -13,7 +14,8 @@ const View = (function() {
     drawBoardCircles()
     drawBoardLines()
     drawStones()
-    updateScoreBoard()
+    drawEnds()
+    drawScoreBoard()
   }
   
   function drawBoardCircles() {
@@ -42,6 +44,7 @@ const View = (function() {
 
   function drawStones() {  
   
+    // Draw stones in play
     stroke(0)
     Sheet.stonesInPlay.forEach( stone => {
       if (stone.color === 'y') {
@@ -51,36 +54,14 @@ const View = (function() {
       }
       circle(stone.position.x, stone.position.y, 2 * stone.radius)
     })
-  }
-
-  
-  function updateScoreBoard() {
-    
-    // Create ends line -2---
-    let ends            = ''
-    for (let i = 0; i < Game.endsPerGame - Game.currentEnd; i++) {
-      ends += '- '
-    }
-    ends += 'O'
-  
-    // Create stones line --3---
-    let stones = ''
-    for (let i = 1; i < Math.round((Sheet.stoneStorage.length+1)/2); i++) {
-      stones += '- '
-    }
-    stones += (Sheet.stoneStorage.length % 2 === 0) ? 'X' : 'O'
-  
-    txtEnds.innerText = ends
-    txtStones.innerText = stones
-    txtYellow.innerText = Game.totalScore.y
-    txtRed.innerText = Game.totalScore.r
-  
+      
     // Draw remaining stones on canvas
-    const d       = k*10
-    const upRow   = 0.9 * Sheet.leftedge
-    const storage = Sheet.stoneStorage.length
-    let yPos
+    const d         = k*10
+    const upRow     = 0.9 * Sheet.leftedge
+    const storage   = Sheet.stoneStorage.length
     let xPos
+    let yPos
+
     for (let i = 0; i < storage; i++) {
       const stone = Sheet.stoneStorage[i]
 
@@ -100,24 +81,59 @@ const View = (function() {
       
       circle(10 + xPos, yPos, d)
     }
+  }
+
+  
+  function drawEnds() {
     
+    const d         = k*10
+    const bottomRow = 0.8 * Sheet.rightedge
+    const ends      = Game.endsPerGame - Game.currentEnd
+    let yPos
+    let xPos
+    
+    // Draw remaining ends
+    for (let i = 0; i < ends; i++) {
+      fill(255)
+      stroke(0)
+      yPos = bottomRow
+      xPos = i * (d+5)
+      
+      square(10 + xPos, yPos, d)
+    }
+  }
+    
+  function drawScoreBoard() {
+    // Draw yellow and red score
+    txtYellow.innerText = Game.totalScore.y
+    txtRed.innerText = Game.totalScore.r
+    
+    const curl = Sheet.currentStone.curlFactor
+    if (curl !== 0) {
+      txtDir.innerText = (curl > 0) ? 'right' : 'left'
+      txtCurl.innerText = Math.abs(curl)
+    } else {
+      txtDir.innerText = ''
+      txtCurl.innerText = ''
+    }
+  
+    // Set buttone text and visibility
     if (FSM.state === 'idle') {
-      btnNewEnd.innerText = 'New End'
+      btnNewEnd.innerText = 'Start new end'
       btnNewEnd.disabled = false
       btnNewEnd.onclick = () => FSM.execute('new_end')
       return
     }
     
     if (FSM.state === 'end') {
-      btnNewEnd.innerText = 'New Game'
+      btnNewEnd.innerText = 'Start new game'
       btnNewEnd.disabled = false
       btnNewEnd.onclick = () => FSM.execute('new_game')
       return
     }
   
-    btnNewEnd.innerText = 'Game on'
+    btnNewEnd.innerText = 'Game is on'
     btnNewEnd.disabled = true
-    txtCurl.innerText = Sheet.currentStone.curlFactor
   }  
   
   
