@@ -75,6 +75,31 @@ const View = (function() {
     txtYellow.innerText = Game.totalScore.y
     txtRed.innerText = Game.totalScore.r
   
+    // Draw remaining stones on canvas
+    const d       = k*10
+    const upRow   = 0.9 * Sheet.leftedge
+    const storage = Sheet.stoneStorage.length
+    let yPos
+    let xPos
+    for (let i = 0; i < storage; i++) {
+      const stone = Sheet.stoneStorage[i]
+
+      if (stone.color === 'y') {
+          fill(255, 255, 0)
+      } else {
+        fill(255, 0, 0)
+      }
+      
+      if (stone.color === Game.lastWinner) {
+        yPos = upRow
+      } else {
+        yPos = upRow + (d+5)
+      }
+      
+      xPos = Math.floor(i / 2) * (d+5)
+      
+      circle(10 + xPos, yPos, d)
+    }
     
     if (FSM.state === 'idle') {
       btnNewEnd.innerText = 'New End'
