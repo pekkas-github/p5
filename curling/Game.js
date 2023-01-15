@@ -15,8 +15,8 @@ class Game {
 
   static findEndScore() {
     const result = End.getScore()
-
-    Game.lastWinner = result.color
+ 
+    Game.lastWinner = result.winner
     Game.totalScore.y += result.y
     Game.totalScore.r += result.r
     Game.currentEnd++    

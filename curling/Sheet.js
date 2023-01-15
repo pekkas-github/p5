@@ -56,7 +56,7 @@ class Sheet {
     const stonesInHomeBase = Sheet.stonesInPlay.filter( stone => {
       return (stone.distance.mag() - stone.radius) < (Sheet.backline - Sheet.teeline) 
     })
-    
+    console.table(stonesInHomeBase)
     return stonesInHomeBase
 
   }

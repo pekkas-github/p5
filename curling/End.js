@@ -3,7 +3,7 @@ class End {
   static stonePairsPerEnd
   
   static initialize(lastWinner) {
-    End.stonePairsPerEnd = 6
+    End.stonePairsPerEnd = 2
     Sheet.stoneStorage     = []
     Sheet.stonesInPlay     = []
 
@@ -44,11 +44,11 @@ class End {
     let score    = 0
     let i        = 0
     
+    result.winner = winner
     while (i < stonesInHomeBase.length && stonesInHomeBase[i].color === winner) {
       result[winner]++
       i++
     }
-    
     return result
   }
 
