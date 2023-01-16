@@ -1,22 +1,22 @@
 class FSM {
 
   static stateTable = [
-    {state:'end'       , event:'new_game' , act:'newGame'       ,resp:'none'         ,next:'wait_curl'  },
-    {state:'wait_curl' , event:'inc_curl' , act:'incCurl'       ,resp:'none'         ,next:'ready'      },
-    {state:'wait_curl' , event:'dec_curl' , act:'decCurl'       ,resp:'none'         ,next:'ready'      },
-    {state:'ready'     , event:'inc_curl' , act:'incCurl'       ,resp:'none'         ,next:'ready'      },
-    {state:'ready'     , event:'dec_curl' , act:'decCurl'       ,resp:'none'         ,next:'ready'      },
-    {state:'ready'     , event:'shoot'    , act:'shoot'         ,resp:'none'         ,next:'running'    },
-    {state:'running'   , event:'run'      , act:'move'          ,resp:'running'      ,next:'running'    },
-    {state:'running'   , event:'run'      , act:'move'          ,resp:'not_running'  ,next:'stopped'    },
-    {state:'running'   , event:'run'      , act:'move'          ,resp:'end_done'     ,next:'score'      },
-    {state:'stopped'   , event:'run'      , act:'nextStone'     ,resp:'none'         ,next:'wait_curl'  },
-    {state:'score'     , event:'run'      , act:'score'         ,resp:'next_end'     ,next:'idle'       },
-    {state:'score'     , event:'run'      , act:'score'         ,resp:'game_over'    ,next:'end'        },
-    {state:'idle'      , event:'new_end'  , act:'newEnd'        ,resp:'none'         ,next:'wait_curl'  },
+    {state:'game_idle'      , event:'new_game'    , act:'newGame'       ,resp:'none'         ,next:'stone_idle'     },
+    {state:'end_idle'       , event:'new_end'     , act:'newEnd'        ,resp:'none'         ,next:'stone_idle'     },
+    {state:'stone_idle'     , event:'curl_left'   , act:'incCurl'       ,resp:'none'         ,next:'shoot_ready'    },
+    {state:'stone_idle'     , event:'curl_right'  , act:'decCurl'       ,resp:'none'         ,next:'shoot_ready'    },
+    {state:'shoot_ready'    , event:'curl_left'   , act:'incCurl'       ,resp:'none'         ,next:'shoot_ready'    },
+    {state:'shoot_ready'    , event:'curl_right'  , act:'decCurl'       ,resp:'none'         ,next:'shoot_ready'    },
+    {state:'shoot_ready'    , event:'shoot'       , act:'shoot'         ,resp:'none'         ,next:'stones_running' },
+    {state:'stones_running' , event:'run'         , act:'move'          ,resp:'running'      ,next:'stones_running' },
+    {state:'stones_running' , event:'run'         , act:'move'          ,resp:'not_running'  ,next:'stones_stopped' },
+    {state:'stones_running' , event:'run'         , act:'move'          ,resp:'end_done'     ,next:'end_done'       },
+    {state:'stones_stopped' , event:'run'         , act:'nextStone'     ,resp:'none'         ,next:'stone_idle'     },
+    {state:'end_done'       , event:'run'         , act:'score'         ,resp:'next_end'     ,next:'end_idle'       },
+    {state:'end_done'       , event:'run'         , act:'score'         ,resp:'game_over'    ,next:'game_idle'      },
   ]
     
-  static state = 'wait_curl'    // Initial state    
+  static state = 'stone_idle'    // Initial state    
 
   
   static execute(event, ...args) {

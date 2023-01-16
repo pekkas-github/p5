@@ -118,14 +118,14 @@ const View = (function() {
     }
   
     // Set buttone text and visibility
-    if (FSM.state === 'idle') {
+    if (FSM.state === 'end_idle') {
       btnNewEnd.innerText = 'Start new end'
       btnNewEnd.disabled = false
       btnNewEnd.onclick = () => FSM.execute('new_end')
       return
     }
     
-    if (FSM.state === 'end') {
+    if (FSM.state === 'game_idle') {
       btnNewEnd.innerText = 'Start new game'
       btnNewEnd.disabled = false
       btnNewEnd.onclick = () => FSM.execute('new_game')
@@ -148,8 +148,8 @@ const View = (function() {
 
 function keyPressed() {
   
-  if (keyCode === UP_ARROW)   FSM.execute('inc_curl') 
-  if (keyCode === DOWN_ARROW) FSM.execute('dec_curl') 
+  if (keyCode === UP_ARROW)   FSM.execute('curl_left') 
+  if (keyCode === DOWN_ARROW) FSM.execute('curl_right') 
   if (keyCode === 32) {
     const speedMag     = mouseX / Sheet.width
     // Translate doesn't affect mouseY values
